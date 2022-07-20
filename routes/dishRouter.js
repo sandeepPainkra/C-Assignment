@@ -1,9 +1,11 @@
 const express = require("express");
 const Dishes = require("../model/dishModel");
 const dishRouter = express.Router();
+const authenticate = require("../authenticate");
 
 dishRouter
-  .get("/", (req, res, next) => {
+  .route("/")
+  .get((req, res, next) => {
     Dishes.find({})
       .then((dishes) => {
         res.statusCode = 200;
@@ -12,21 +14,22 @@ dishRouter
       })
       .catch((err) => next(err));
   })
-  .post("/", (req, res, next) => {
+  .post(authenticate.varifyUser, (req, res, next) => {
     Dishes.create(req.body)
       .then((dish) => {
         console.log("Dish Created ", dish);
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.json(dish);
+        next();
       })
       .catch((err) => next(err));
   })
-  .put("/", (req, res, next) => {
+  .put(authenticate.varifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /dishes");
   })
-  .delete("/", (req, res, next) => {
+  .delete(authenticate.varifyUser, (req, res, next) => {
     Dishes.remove({})
       .then(
         (resp) => {
@@ -37,8 +40,10 @@ dishRouter
         (err) => next(err)
       )
       .catch((err) => next(err));
-  })
-  .get("/:dishId", (req, res, next) => {
+  });
+dishRouter
+  .route("/:dishId")
+  .get(authenticate.varifyUser, (req, res, next) => {
     Dishes.findById(req.params.dishId)
       .then(
         (dish) => {
@@ -50,11 +55,11 @@ dishRouter
       )
       .catch((err) => next(err));
   })
-  .post("/:dishId", (req, res, next) => {
+  .post(authenticate.varifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /dishes/" + req.params.dishId);
   })
-  .put("/:dishId", (req, res, next) => {
+  .put(authenticate.varifyUser, (req, res, next) => {
     Dishes.findByIdAndUpdate(
       req.params.dishId,
       {
@@ -72,7 +77,7 @@ dishRouter
       )
       .catch((err) => next(err));
   })
-  .delete("/:dishId", (req, res, next) => {
+  .delete(authenticate.varifyUser, (req, res, next) => {
     Dishes.findByIdAndRemove(req.params.dishId)
       .then(
         (resp) => {
