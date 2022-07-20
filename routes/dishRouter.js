@@ -14,7 +14,7 @@ dishRouter
       })
       .catch((err) => next(err));
   })
-  .post(authenticate.varifyUser, (req, res, next) => {
+  .post((req, res, next) => {
     Dishes.create(req.body)
       .then((dish) => {
         console.log("Dish Created ", dish);
@@ -25,11 +25,11 @@ dishRouter
       })
       .catch((err) => next(err));
   })
-  .put(authenticate.varifyUser, (req, res, next) => {
+  .put((req, res, next) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /dishes");
   })
-  .delete(authenticate.varifyUser, (req, res, next) => {
+  .delete((req, res, next) => {
     Dishes.remove({})
       .then(
         (resp) => {
@@ -43,7 +43,7 @@ dishRouter
   });
 dishRouter
   .route("/:dishId")
-  .get(authenticate.varifyUser, (req, res, next) => {
+  .get((req, res, next) => {
     Dishes.findById(req.params.dishId)
       .then(
         (dish) => {
@@ -55,11 +55,11 @@ dishRouter
       )
       .catch((err) => next(err));
   })
-  .post(authenticate.varifyUser, (req, res, next) => {
+  .post((req, res, next) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /dishes/" + req.params.dishId);
   })
-  .put(authenticate.varifyUser, (req, res, next) => {
+  .put((req, res, next) => {
     Dishes.findByIdAndUpdate(
       req.params.dishId,
       {
@@ -77,7 +77,7 @@ dishRouter
       )
       .catch((err) => next(err));
   })
-  .delete(authenticate.varifyUser, (req, res, next) => {
+  .delete((req, res, next) => {
     Dishes.findByIdAndRemove(req.params.dishId)
       .then(
         (resp) => {
